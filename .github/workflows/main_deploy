@@ -4,7 +4,6 @@ on:
   pull_request:
     branches:
       - main
-
   push:
     branches:
       - main
@@ -13,7 +12,6 @@ jobs:
   sfdxvalidate:
     name: "Run SFDX Validate"
     runs-on: ubuntu-latest
-
     strategy:
       matrix:
         node-version: [18.x]
@@ -21,24 +19,44 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0 
+          fetch-depth: 0
 
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
 
-      - name: Install SFDX CLI and sfdx-git-delta plugin # Ce package va vous permettre de faire un delta entre votre branche et la branch ciblé. Voici la documentation : https://github.com/scolladon/sfdx-git-delta
+      - name: Install SFDX CLI and sfdx-git-delta plugin
         run: |
           npm install -g @salesforce/cli@latest
           echo "y" | npm install sfdx-git-delta@3.3.0 -g
 
-      - name: 'Authentification Salesforce' # Vous devez avoir une connexion avec Salesforce pour pouvoir deployer le code à la dernière étape.
-        run:  # A faire
+      - name: Authentification Salesforce
+        run: |
+          echo "${{ secrets.SFDX_AUTH_URL }}" > ./SFDX_AUTH_URL.txt
+          sf org login sfdx-url --sfdx-url-file ./SFDX_AUTH_URL.txt --alias targetOrg --set-default
+          rm ./SFDX_AUTH_URL.txt
 
-      - name: 'Generate metadata delta pull request'  # Utilisez le plug-in sfdx-git-delta pour effectuer un delta, generer le package xml dans un fichier temporaire ex : .temp
-        run:  # A faire
+      - name: Generate metadata delta
+        run: |
+          mkdir -p .temp
+          sgd --to HEAD --from HEAD~1 --repo . --output .temp --source force-app
+          cat .temp/package/package.xml
 
-      - name: 'Déployer les métadonnées sur la branch main'
-        if: github.ref == 'refs/heads/main'
-        run:  # A faire déployer le code venant du fichier package.xml généré précédemment 
+      - name: Validate on pull request
+        if: github.event_name == 'pull_request'
+        run: |
+          sf project deploy validate \
+            --manifest .temp/package/package.xml \
+            --target-org targetOrg \
+            --test-level RunLocalTests \
+            --wait 30
+
+      - name: Deploy on push to main
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: |
+          sf project deploy start \
+            --manifest .temp/package/package.xml \
+            --target-org targetOrg \
+            --test-level RunLocalTests \
+            --wait 30
