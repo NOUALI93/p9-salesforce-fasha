@@ -17,9 +17,9 @@ private class testUpdateAllAccounts {
         Database.executeBatch(batch, 200);
         Test.stopTest();
 
-        Account updatedAcc = [SELECT Chiffre_Affaire__c FROM Account WHERE Id = :acc1.Id];
-        System.assertNotEquals(null, updatedAcc.Chiffre_Affaire__c, 'Le CA ne doit pas être null');
-        System.assert(updatedAcc.Chiffre_Affaire__c > 0, 'Le CA doit être supérieur à 0');
+        Account updatedAcc = [SELECT ChiffreAffaire__c FROM Account WHERE Id = :acc1.Id];
+        System.assertNotEquals(null, updatedAcc.ChiffreAffaire__c, 'Le CA ne doit pas être null');
+        System.assert(updatedAcc.ChiffreAffaire__c > 0, 'Le CA doit être supérieur à 0');
     }
 
     @isTest
@@ -31,8 +31,8 @@ private class testUpdateAllAccounts {
         Database.executeBatch(batch, 200);
         Test.stopTest();
 
-        Account updatedAcc = [SELECT Chiffre_Affaire__c FROM Account WHERE Id = :acc2.Id];
-        System.assertEquals(null, updatedAcc.Chiffre_Affaire__c, 'Le CA doit être null sans commandes');
+        Account updatedAcc = [SELECT ChiffreAffaire__c FROM Account WHERE Id = :acc2.Id];
+        System.assertEquals(null, updatedAcc.ChiffreAffaire__c, 'Le CA doit être null sans commandes');
     }
     @isTest
     static void testCalculMontantAvecShipmentCost() {

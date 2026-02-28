@@ -16,7 +16,7 @@ trigger UpdateAccountCA on Order (after update) {
 
     // Récupérer les comptes en une seule requête SOQL (bulkifié)
     Map<Id, Account> accountMap = new Map<Id, Account>(
-        [SELECT Id, Chiffre_Affaire__c FROM Account WHERE Id IN :accountIds]
+        [SELECT Id, ChiffreAffaire__c FROM Account WHERE Id IN :accountIds]
     );
 
     // Calculer le CA total des commandes Activated pour chaque compte
@@ -32,7 +32,7 @@ trigger UpdateAccountCA on Order (after update) {
         Id accId = (Id) ar.get('AccountId');
         Decimal total = (Decimal) ar.get('total');
         if (accountMap.containsKey(accId)) {
-            accountMap.get(accId).Chiffre_Affaire__c = total;
+            accountMap.get(accId).ChiffreAffaire__c = total;
         }
     }
 

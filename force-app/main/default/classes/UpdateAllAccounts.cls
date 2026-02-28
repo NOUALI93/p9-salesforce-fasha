@@ -24,7 +24,7 @@ global class UpdateAllAccounts implements Database.Batchable<sObject> {
             Decimal total = (Decimal) ar.get('total');
             accountsToUpdate.add(new Account(
                 Id = accId,
-                Chiffre_Affaire__c = total
+                ChiffreAffaire__c = total
             ));
         }
 

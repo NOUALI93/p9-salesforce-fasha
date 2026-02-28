@@ -41,8 +41,8 @@ private class testUpdateProductPrices {
         update o;
 
         // Récupérer le CA avant
-        Account accBefore = [SELECT Chiffre_d_affaire__c FROM Account WHERE Id = :acc.Id];
-        Decimal caBefore = accBefore.Chiffre_d_affaire__c;
+        Account accBefore = [SELECT ChiffreAffaire__c FROM Account WHERE Id = :acc.Id];
+        Decimal caBefore = accBefore.ChiffreAffaire__c;
 
         // Lancer le batch de mise à jour des prix
         Test.startTest();
@@ -56,8 +56,8 @@ private class testUpdateProductPrices {
             'Le TotalAmount de la commande activée ne doit pas changer');
 
         // Vérifier que le CA du compte N'A PAS changé
-        Account accAfter = [SELECT Chiffre_d_affaire__c FROM Account WHERE Id = :acc.Id];
-        System.assertEquals(caBefore, accAfter.Chiffre_d_affaire__c,
+        Account accAfter = [SELECT ChiffreAffaire__c FROM Account WHERE Id = :acc.Id];
+        System.assertEquals(caBefore, accAfter.ChiffreAffaire__c,
             'Le CA du compte ne doit pas changer suite à une MAJ des prix');
     }
 
